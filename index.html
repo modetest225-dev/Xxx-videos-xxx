@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>للكبار فقط</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* واجهة الزر العادي */
+        #normal-ui {
+            text-align: center;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* واجهة الاختراق */
+        #hack-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            color: red;
+            z-index: 9999;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 4rem;
+            margin: 0;
+            animation: blink 1s infinite;
+        }
+
+        p {
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        /* نافذة الكاميرا المصغرة */
+        #camera-feed {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 200px;
+            height: 150px;
+            border: 2px solid red;
+            background: #000;
+            z-index: 10000;
+        }
+
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        .scanning-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: rgba(255, 0, 0, 0.5);
+            animation: scan 2s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes scan {
+            0% { top: 0%; }
+            100% { top: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- الواجهة العادية -->
+    <div id="normal-ui">
+        <h2> المحتوى للكبار فقط يرجى النقر على متابعة الضغط على الزر أدناه</h2>
+        <button id="start-btn">اضغط هنا للمتابعة</button>
+    </div>
+
+    <!-- واجهة الاختراق -->
+    <div id="hack-overlay">
+        <div class="scanning-line"></div>
+        <h1>⚠️ تم اختراق جهازك ⚠️</h1>
+        <p>أنت الآن تحت قبضتي.. لا يمكنك التحرك!</p>
+        <p>جاري تحميل بياناتك...</p>
+        
+        <!-- الفيديو المخفي -->
+        <video id="camera-feed" autoplay muted playsinline></video>
+    </div>
+
+    <script>
+        document.getElementById('start-btn').addEventListener('click', async () => {
+            // إخفاء الواجهة العادية
+            document.getElementById('normal-ui').style.display = 'none';
+            
+            // إظهار واجهة الاختراق
+            const overlay = document.getElementById('hack-overlay');
+            overlay.style.display = 'flex';
+
+            try {
+                // طلب الوصول للكاميرا (النافذة المنبثقة الحقيقية للمتصفح)
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                
+                const videoElement = document.getElementById('camera-feed');
+                videoElement.srcObject = stream;
+
+                // تشغيل صوت "بييب" لزيادة الرعب
+                // ملاحظة: الصوت يعمل لأن المستخدم ضغط زراً مسبقاً
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                oscillator.type = 'sawtooth';
+                oscillator.frequency.value = 400; 
+                oscillator.connect(audioCtx.destination);
+                oscillator.start();
+                setTimeout(() => oscillator.stop(), 500); 
+
+            } catch (err) {
+                console.error("حدث خطأ:", err);
+                alert(" انت مجرد أخرق بياناتك معي وصورك وملفاتك لم يتم السماح بالكاميرا، لكن البيانات تم جمعها!
+                      ");
+            }
+        });
+    </script>
+</body>
+  </html>
